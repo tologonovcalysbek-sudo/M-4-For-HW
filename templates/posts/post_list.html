@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+
+<h1 class="mb-4">Последние публикации</h1>
+
+<div class="row g-4">
+
+    {% for post in posts %}
+    <div class="col-md-6">
+        <div class="card post-card shadow-sm h-100">
+<div class="card-body">
+
+    <span class="badge text-bg-secondary mb-2">
+        {{ post.category.name }}
+    </span>
+
+    <h5 class="card-title">
+        {{ post.title }}
+    </h5>
+
+    <p class="card-text text-muted">
+        {{ post.content|truncatewords:20 }}
+    </p>
+
+    <a href="{% url 'post_detail' post.id %}"
+       class="btn btn-dark btn-sm">
+        Читать
+    </a>
+            <div class="card-footer text-muted small">
+                {{ post.created_at }}
+            </div>
+
+</div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}
