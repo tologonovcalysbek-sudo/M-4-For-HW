@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="margin-top: 20px;">
+    <h2>Список активных категорий</h2>
+    <hr>
+    <ul>
+        {% for category in categories %}
+            <li style="margin-bottom: 15px;">
+                <strong>{{ category.name }}</strong>
+                {% if category.description %}
+                    <p>{{ category.description }}</p>
+                {% else %}
+                    <p style="color: gray; font-style: italic;">Описание отсутствует</p>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>Активных категорий пока нет.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

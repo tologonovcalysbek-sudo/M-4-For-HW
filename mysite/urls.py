@@ -18,7 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from posts.views import about, get_post, get_posts, home, me
+from posts.views import about, get_post, get_posts, home, me, active_categories_view
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -27,10 +27,10 @@ urlpatterns = [
     path("test/", me, name="test"),
     path("posts/", get_posts, name="posts"),
     path("post/<int:pk>/detail/", get_post, name="post_detail"),
+    
+
+    path("categories/", active_categories_view, name="active_categories"),
 ]
-
-
-
 
 
 

@@ -1,5 +1,6 @@
 from django.http.response import HttpResponse
 from django.shortcuts import render
+from .models import Category  
 
 from posts.models import Post
 
@@ -44,29 +45,7 @@ def get_post(request, pk):
 
 
 
-def create_post():
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def category_list(request):
-#     categories = Category.odjects.filter(is_active=True)
-
-#     return render(request,'categories.html', {
-
-#     })
+def active_categories_view(request):
+    categories = Category.objects.filter(is_active=True)
+    return render(request, 'posts/category_list.html', {'categories': categories})

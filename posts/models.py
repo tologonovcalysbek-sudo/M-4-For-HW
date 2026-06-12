@@ -7,9 +7,10 @@ class Tag(models.Model):
     def __str__(self) -> str:
         return self.name
 
-
 class Category(models.Model):
-    name = models.CharField()
+    name = models.CharField(max_length=100)  
+    description = models.TextField(null=True, blank=True)  
+    is_active = models.BooleanField(default=True)  
 
     def __str__(self) -> str:
         return self.name
@@ -24,7 +25,7 @@ class Post(models.Model):
     user = models.CharField(max_length=255, null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     tags = models.ManyToManyField(Tag, null=True, blank=True)
-    image = models.ImageField()
+    image = models.ImageField(null=True, blank=True)
 
     def __str__(self) -> str:
         name = self.category.name if self.category else "-"
