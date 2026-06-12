@@ -1,43 +1,46 @@
 {% extends 'base.html' %}
 
-{% block title %}Главная{% endblock %}
-
 {% block content %}
-
-<h1 class="mb-4">Последние публикации</h1>
-
-<div class="row g-4">
-
-    {% for post in posts %}
-    <div class="col-md-6">
-        <div class="card post-card shadow-sm h-100">
-<div class="card-body">
-
-    <span class="badge text-bg-secondary mb-2">
-        {{ post.category.name }}
-    </span>
-
-    <h5 class="card-title">
-        {{ post.title }}
-    </h5>
-
-    <p class="card-text text-muted">
-        {{ post.content|truncatewords:20 }}
-    </p>
-
-    <a href="{% url 'post_detail' post.id %}"
-       class="btn btn-dark btn-sm">
-        Читать
-    </a>
-            <div class="card-footer text-muted small">
-                {{ post.created_at }}
-            </div>
-
-</div>
-        </div>
+<div class="container" style="margin-top: 20px; display: flex; gap: 30px;">
+    
+    <div class="categories-sidebar" style="width: 25%; background: #f8f9fa; padding: 15px; border-radius: 5px; height: fit-content;">
+        <h3>Категории</h3>
+        <hr>
+        <ul style="list-style: none; padding-left: 0;">
+            {% for category in categories %}
+                <li style="margin-bottom: 10px;">
+                    <span style="background-color: #0d6efd; color: white; padding: 5px 10px; border-radius: 4px; display: inline-block;">
+                        {{ category.name }}
+                    </span>
+                </li>
+            {% empty %}
+                <li>Активных категорий пока нет</li>
+            {% endfor %}
+        </ul>
     </div>
-    {% endfor %}
+
+    <div class="posts-list" style="width: 75%;">
+        <h3>Все публикации</h3>
+        <hr>
+        {% for post in posts %}
+            <div class="post-card" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px;">
+                <h2>{{ post.title }}</h2>
+                <p style="color: gray; font-size: 0.9rem;">Опубликовано: {{ post.created_at|date:"d.m.Y H:i" }}</p>
+                
+                {% if post.category %}
+                    <p><strong>Категория:</strong> {{ post.category.name }}</p>
+                {% endif %}
+                
+                <p>{{ post.content|truncatewords:20 }}</p>
+                
+                <a href="{% url 'post_detail' pk=post.pk %}" style="color: #0d6efd; text-decoration: none; font-weight: bold;">
+                    Читать полностью →
+                </a>
+            </div>
+        {% empty %}
+            <p>Постов пока нет.</p>
+        {% endfor %}
+    </div>
 
 </div>
-
 {% endblock %}
