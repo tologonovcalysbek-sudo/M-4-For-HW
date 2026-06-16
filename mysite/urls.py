@@ -14,11 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
+
 from django.contrib import admin
 from django.urls import path
 
 from posts.views import about, get_post, get_posts, home, me, create_post, create_category
-
+# from users.views import register_user
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", home, name="home"),
@@ -32,96 +35,6 @@ urlpatterns = [
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# from django.db import models
-
-
-
-
-# class Category(models.Model):
-#     name = models.CharField()
-
-
-# class Post(models.Model):
-#     title = models.CharField()
-#     content = models.TextField()
-#     rate = models.IntegerField()
-#     user = models.CharField(max_length=255, null=True, blank=True)
-#     category = models.ForeignKey(Category, on_delete=models.SET_NULL)
-
-# ulpaterns = [
-#     path('admin/', admin.site.urls),
-#     path('',category_list),
-#     path('categoryies/',category_list),
-# ]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# C-R-U-D
-
-# C - create
-# INSERT INTO (fields) VALUES (values);
-# Model.objects.create(name='asdasd', rate=2)
-# user = User(name="islam", age=22)
-# user.save()
-
-# R - read
-# SELECT * FROM table_name WHERE id=1;
-# users = User.objects.all()
-
-
-# U - update
-# UPDATE table_name SET field_name=value;
-# user = User.objects.get(name="islam")
-# user.name = "Islam"
-# user.save()
-
-# D - delete
-# DELETE table_name WHERE id=1;
-# user = User.objects.get(name="islam")
-# user.delete()
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

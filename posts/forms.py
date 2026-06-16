@@ -18,12 +18,23 @@ class PostForm(forms.ModelForm):
             'tags': forms.SelectMultiple(attrs={'class': 'form-control'}),
         }
 
-
     def clean_content(self):
         content = self.cleaned_data.get('content')
         if len(content) < 50:
             raise ValidationError("Текст публикации должен содержать не менее 50 символов!")
         return content
+
+
+    def clean_title(self):
+        title = self.cleaned_data.get('title')
+        if title == "kosyak":
+            raise ValidationError("Недопустимое название публикации (BAD WORD)!")
+        return title
+
+
+
+
+
 
 
 class CategoryForm(forms.ModelForm):
