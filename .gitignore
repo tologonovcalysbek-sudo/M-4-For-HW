@@ -283,6 +283,3 @@ pyrightconfig.json
 ионид
 
 # Конец https://www.toptal.com/developers/gitignore/api/python,django,visualstudiocode
-venv/
-*.png
-*.jpg
