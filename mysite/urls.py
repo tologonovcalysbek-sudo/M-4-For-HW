@@ -20,7 +20,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
-from posts.views import about, get_post, get_posts, home, me, create_post, create_category
+from posts.views import about, get_post, get_posts, home, me, create_post, create_category,user_posts, edit_post, delete_post
 # from users.views import register_user
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -31,6 +31,9 @@ urlpatterns = [
     path("post/<int:pk>/detail/", get_post, name="post_detail"),
     path("posts/create/", create_post, name="create_post"),
     path("category/create/", create_category, name="create_category"),
+    path("posts/my/", user_posts, name="user_posts"),
+    path("posts/<int:pk>/edit/", edit_post, name="edit_post"),
+    path("posts/<int:pk>/delete/", delete_post, name="delete_post"),
 ]
 
 
