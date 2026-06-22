@@ -1,103 +1,84 @@
-from django.shortcuts import render, get_object_or_404, redirect 
-from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.http import HttpResponse, HttpResponseForbidden
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView, View, ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Post, Category
-from .forms import PostForm, CategoryForm  
+from .forms import PostForm, CategoryForm
 
+class HomeView(TemplateView):
+    template_name = "base.html"
 
-def home(request):
-    return render(request, "base.html")
+class AboutView(TemplateView):
+    template_name = "about.html"
 
-def about(request):
-    return render(request, "about.html")
+class MeView(View):
+    def get(self, request):
+        return HttpResponse("<h1>ITS TEST!</h1>")
 
-def me(request):
-    return HttpResponse("<h1>ITS TEST!</h1>")
+class PostListView(ListView):
+    model = Post
+    template_name = 'posts/post_list.html'
+    context_object_name = 'posts'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.filter(is_active=True)
+        return context
 
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'posts/post_detail.html'
+    context_object_name = 'post'
 
-def get_posts(request):
-    posts = Post.objects.all()  
-    categories = Category.objects.filter(is_active=True)  
-    
-    context = {
-        'posts': posts,
-        'categories': categories
-    }
-    return render(request, 'posts/post_list.html', context)
+class PostCreateView(LoginRequiredMixin, CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'posts/create_post.html'
+    success_url = reverse_lazy('user_posts')
+    login_url = 'login'
 
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.rate = 5
+        return super().form_valid(form)
 
-def get_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    return render(request, 'posts/post_detail.html', {'post': post})
+class UserPostListView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = 'posts/user_posts.html'
+    context_object_name = 'posts'
+    login_url = 'home'
 
+    def get_queryset(self):
+        return Post.objects.filter(user=self.request.user)
 
+class PostUpdateView(LoginRequiredMixin, UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'posts/edit_post.html'
+    success_url = reverse_lazy('user_posts')
+    login_url = 'login'
 
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.user != request.user:
+            return HttpResponseForbidden("Вы не можете редактировать чужой пост!")
+        return super().dispatch(request, *args, **kwargs)
 
-def create_post(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-        
-    if request.method == "POST":
-        form = PostForm(request.POST, request.FILES)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.user = request.user  # Заменили на post.user
-            post.rate = 5
-            post.save()
-            form.save_m2m()
-            return redirect('user_posts')
-    else:
-        form = PostForm()
-    
-    return render(request, 'posts/create_post.html', {'form': form})
+class PostDeleteView(LoginRequiredMixin, DeleteView):
+    model = Post
+    template_name = 'posts/delete_confirm.html'
+    success_url = reverse_lazy('user_posts')
+    login_url = 'login'
 
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.user != request.user:
+            return HttpResponseForbidden("Вы не можете удалить чужой пост!")
+        return super().dispatch(request, *args, **kwargs)
 
-def user_posts(request):
-    if not request.user.is_authenticated:
-        return redirect('home')
-    
-    posts = Post.objects.filter(user=request.user)  # Заменили на user=request.user
-    return render(request, 'posts/user_posts.html', {'posts': posts})
-
-
-def edit_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    
-    if post.user != request.user:  # Заменили на post.user
-        return HttpResponse("Вы не можете редактировать чужой пост!", status=403)
-        
-    if request.method == "POST":
-        form = PostForm(request.POST, request.FILES, instance=post)
-        if form.is_valid():
-            form.save()
-            return redirect('user_posts')
-    else:
-        form = PostForm(instance=post)
-        
-    return render(request, 'posts/edit_post.html', {'form': form, 'post': post})
-
-
-def delete_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    
-    if post.user != request.user:  # Заменили на post.user
-        return HttpResponse("Вы не можете удалить чужой пост!", status=403)
-        
-    if request.method == "POST":
-        post.delete()
-        return redirect('user_posts')
-        
-    return render(request, 'posts/delete_confirm.html', {'post': post})
-
-
-
-def create_category(request):
-    if request.method == "POST":
-        form = CategoryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('user_posts')
-    else:
-        form = CategoryForm()
-    
-    return render(request, 'posts/create_category.html', {'form': form})
+class CategoryCreateView(CreateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = 'posts/create_category.html'
+    success_url = reverse_lazy('user_posts')

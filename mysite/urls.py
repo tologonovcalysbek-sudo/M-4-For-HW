@@ -14,29 +14,36 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf import settings
-from django.conf.urls.static import static
-
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+from posts.views import (
+    HomeView,
+    AboutView,
+    MeView,
+    PostListView,
+    PostDetailView,
+    PostCreateView,
+    UserPostListView,
+    PostUpdateView,
+    PostDeleteView,
+    CategoryCreateView
+)
 
-from posts.views import about, get_post, get_posts, home, me, create_post, create_category,user_posts, edit_post, delete_post
-# from users.views import register_user
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", home, name="home"),
-    path("about/", about, name="about"),
-    path("test/", me, name="test"),
-    path("posts/", get_posts, name="posts"),
-    path("post/<int:pk>/detail/", get_post, name="post_detail"),
-    path("posts/create/", create_post, name="create_post"),
-    path("category/create/", create_category, name="create_category"),
-    path("posts/my/", user_posts, name="user_posts"),
-    path("posts/<int:pk>/edit/", edit_post, name="edit_post"),
-    path("posts/<int:pk>/delete/", delete_post, name="delete_post"),
+    path('admin/', admin.site.urls),
+    path("", HomeView.as_view(), name="home"),
+    path("about/", AboutView.as_view(), name="about"),
+    path("test/", MeView.as_view(), name="test"),
+    path("posts/", PostListView.as_view(), name="posts"),
+    path("posts/<int:pk>/detail/", PostDetailView.as_view(), name="post_detail"),
+    path("posts/create/", PostCreateView.as_view(), name="create_post"),
+    path("category/create/", CategoryCreateView.as_view(), name="create_category"),
+    path("posts/my/", UserPostListView.as_view(), name="user_posts"),
+    path("posts/<int:pk>/edit/", PostUpdateView.as_view(), name="edit_post"),
+    path("posts/<int:pk>/delete/", PostDeleteView.as_view(), name="delete_post"),
 ]
-
-
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
